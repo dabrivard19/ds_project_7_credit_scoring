@@ -2,7 +2,7 @@
 import requests
 import streamlit as st
 
-API_URL = "http://127.0.0.1:8000"
+API_URL = "http://127.0.0.1:8080"
 
 
 def get_form_config():
