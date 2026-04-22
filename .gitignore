@@ -1,0 +1,5 @@
+./notebooks/mlruns/
+__pycache__/
+.env
+./data/
+./model/
