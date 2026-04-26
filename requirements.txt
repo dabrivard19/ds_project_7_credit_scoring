@@ -3,13 +3,13 @@ uvicorn
 pydantic
 pandas
 joblib
-scikit-learn=1.7.2
+scikit-learn==1.7.2
 streamlit
 requests
 pytest
 httpx
 numpy
-imbalanced-learn
+imbalanced-learn==0.14.0
 joblib
 python-multipart
 xgboost
