@@ -27,6 +27,10 @@ def form_config():
 
 @app.post("/predict", response_model=PredictionResponse)
 def predict(request: PredictionRequest):
+    print("Entrée dans predict", flush=True)
+    print("Request reçue :", request, flush=True)
+    print("Request dict :", request.model_dump(), flush=True)
+    
     try:
         model = load_model()
         print("Start pour la prédiction...")
