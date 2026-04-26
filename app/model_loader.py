@@ -14,4 +14,11 @@ def load_model():
             f"Modèle introuvable : {MODEL_PATH}. Ajoute ton modele.joblib dans le dossier model/."
         )
     print(f"\nOK: Chargement du modèle depuis {MODEL_PATH}...")
-    return joblib.load(MODEL_PATH)
+    try:
+        model = joblib.load(MODEL_PATH)
+        print(f"\nModèle chargé avec succès.")
+        return model
+    except Exception as exc:
+        print(f"\nErreur lors du chargement du modèle : {exc}")
+        raise RuntimeError(f"Erreur lors du chargement du modèle : {exc}") from exc
+    # return joblib.load(MODEL_PATH)
