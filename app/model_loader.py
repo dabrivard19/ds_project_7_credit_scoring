@@ -13,5 +13,5 @@ def load_model():
         raise FileNotFoundError(
             f"Modèle introuvable : {MODEL_PATH}. Ajoute ton modele.joblib dans le dossier model/."
         )
-    print(f"\nChargement du modèle depuis {MODEL_PATH}...")
+    print(f"\nOK: Chargement du modèle depuis {MODEL_PATH}...")
     return joblib.load(MODEL_PATH)

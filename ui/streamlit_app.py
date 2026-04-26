@@ -2,8 +2,8 @@
 import requests
 import streamlit as st
 
-API_URL = "http://127.0.0.1:8080"
-
+#API_URL = "http://127.0.0.1:8080"
+API_URL = "https://dsproject7creditscoring-production.up.railway.app"
 
 def get_form_config():
     response = requests.get(f"{API_URL}/form-config", timeout=10)
