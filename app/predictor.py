@@ -62,6 +62,7 @@ def run_prediction(model, user_features: dict) -> tuple[int, float | None, list[
 
     probability = None
     if hasattr(model, "predict_proba"):
+        print(f"\nCalcul de la probabilité: ", model.predict_proba(X))
         probability = float(model.predict_proba(X)[0][1])
 
     print(f"Prédiction : {prediction}, Probabilité : {probability}")
