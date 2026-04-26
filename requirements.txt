@@ -12,3 +12,4 @@ numpy
 imbalanced-learn
 joblib
 python-multipart
+xgboost

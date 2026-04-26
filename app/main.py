@@ -29,6 +29,7 @@ def form_config():
 def predict(request: PredictionRequest):
     try:
         model = load_model()
+        print("Start pour la prédiction...")
         prediction, probability, used_features = run_prediction(model, request.features)
         print("Prédiction effectuée avec succès.")
         return PredictionResponse(
