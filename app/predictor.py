@@ -180,7 +180,7 @@ def run_prediction(model, user_features: dict) -> dict:
     return {
         "prediction": prediction,
         "probability": probability,
-        "features_used": feature_names,
+        "used_features": feature_names,
         "local_importance": local_importance,
         "global_importance": global_importance,
     }
