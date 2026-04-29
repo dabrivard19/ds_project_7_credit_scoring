@@ -83,18 +83,51 @@ if submitted:
         with st.expander("Valeurs saisies"):
             st.json(values)
 
-        # add importances local and global
+        # ========================
+        # Importance locale
+        # ========================
         import pandas as pd
-        local_df = pd.DataFrame(result["local_importance"])
-        global_df = pd.DataFrame(result["global_importance"])
+        st.subheader("Importance locale des variables")
 
-        st.subheader("Importance locale")
-        st.dataframe(local_df)
-        st.bar_chart(local_df.set_index("feature")["contribution"])
+        local_importance = result.get("local_importance", [])
 
-        st.subheader("Importance globale")
-        st.dataframe(global_df)
-        st.bar_chart(global_df.set_index("feature")["importance"])
+        if local_importance and len(local_importance) > 0:
+            local_df = pd.DataFrame(local_importance)
+
+            st.dataframe(local_df)
+
+            if "feature" in local_df.columns and "contribution" in local_df.columns:
+                st.bar_chart(
+                    local_df.set_index("feature")["contribution"]
+                )
+            else:
+                st.warning("Format inattendu des données d'importance locale.")
+
+        else:
+            st.info("Importance locale non disponible pour ce modèle ou cette prédiction.")
+
+        # ========================
+        # Importance globale
+        # ========================
+        st.subheader("Importance globale des variables")
+
+        global_importance = result.get("global_importance", [])
+
+        if global_importance and len(global_importance) > 0:
+            global_df = pd.DataFrame(global_importance)
+
+            st.dataframe(global_df)
+
+            if "feature" in global_df.columns and "importance" in global_df.columns:
+                st.bar_chart(
+                    global_df.set_index("feature")["importance"]
+                )
+            else:
+                st.warning("Format inattendu des données d'importance globale.")
+
+        else:
+            st.info("Importance globale non disponible pour ce modèle.")
+
 
     except Exception as exc:
         st.error(f"Erreur lors de l'appel API : {exc}")

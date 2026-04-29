@@ -85,47 +85,55 @@ def get_final_estimator(model):
 
 def get_global_importance(model, feature_names: list[str]) -> list[dict]:
     """
-    Importance globale des variables.
-    Fonctionne avec RandomForest, XGBoost, LightGBM, etc.
+    Importance globale pour XGBClassifier.
     """
-    final_model = get_final_estimator(model)
+    try:
+        final_model = get_final_estimator(model)
 
-    if not hasattr(final_model, "feature_importances_"):
+        if not hasattr(final_model, "feature_importances_"):
+            print("Le modèle n'a pas feature_importances_", flush=True)
+            return []
+
+        importances = final_model.feature_importances_
+
+        global_importance = [
+            {
+                "feature": feature,
+                "importance": float(importance),
+            }
+            for feature, importance in zip(feature_names, importances)
+        ]
+
+        return sorted(
+            global_importance,
+            key=lambda x: x["importance"],
+            reverse=True
+        )
+
+    except Exception as exc:
+        print(f"Erreur importance globale : {exc}", flush=True)
         return []
-
-    importances = final_model.feature_importances_
-
-    global_importance = [
-        {
-            "feature": feature,
-            "importance": float(importance),
-        }
-        for feature, importance in zip(feature_names, importances)
-    ]
-
-    return sorted(
-        global_importance,
-        key=lambda x: x["importance"],
-        reverse=True
-    )
 
 
 def get_local_importance(model, X: pd.DataFrame) -> list[dict]:
     """
-    Importance locale pour le client courant avec SHAP.
+    Importance locale pour un XGBClassifier avec SHAP.
     """
     try:
-        explainer = shap.Explainer(model, X)
-        shap_values = explainer(X)
+        final_model = get_final_estimator(model)
 
-        values = shap_values.values
+        explainer = shap.TreeExplainer(final_model)
+        shap_values = explainer.shap_values(X)
 
-        # Cas classification binaire avec shape: (n_samples, n_features, n_classes)
-        if len(values.shape) == 3:
-            values = values[:, :, 1]
+        # Cas ancien format SHAP : liste [classe_0, classe_1]
+        if isinstance(shap_values, list):
+            shap_values = shap_values[1]
 
-        # Première ligne = client courant
-        client_values = values[0]
+        # Cas nouveau format éventuel : (n_samples, n_features, n_classes)
+        if len(shap_values.shape) == 3:
+            shap_values = shap_values[:, :, 1]
+
+        client_values = shap_values[0]
 
         local_importance = [
             {
@@ -144,7 +152,7 @@ def get_local_importance(model, X: pd.DataFrame) -> list[dict]:
         )
 
     except Exception as exc:
-        print(f"Erreur SHAP : {exc}", flush=True)
+        print(f"Erreur SHAP XGBClassifier : {exc}", flush=True)
         return []
 
 
@@ -158,24 +166,24 @@ def run_prediction(model, user_features: dict) -> dict:
     feature_names = list(X.columns)
 
     try:
-        prediction = int(model.predict(X)[0])
-        print(f"\nPrédiction brute du modèle : {prediction}", flush=True)
+        proba = model.predict_proba(X)
+        probability = float(proba[0][1])
+
+        threshold = 0.5
+        prediction = int(probability >= threshold)
+
+        print(f"\nProbabilités : {proba}", flush=True)
+        print(f"Prédiction avec seuil {threshold} : {prediction}", flush=True)
 
     except Exception as exc:
         print(f"\nErreur lors de la prédiction : {exc}", flush=True)
         raise RuntimeError(f"Erreur lors de la prédiction : {exc}") from exc
 
-    probability = None
-
-    if hasattr(model, "predict_proba"):
-        proba = model.predict_proba(X)
-        print(f"\nCalcul de la probabilité : {proba}", flush=True)
-        probability = float(proba[0][1])
-
     global_importance = get_global_importance(model, feature_names)
     local_importance = get_local_importance(model, X)
 
-    print(f"Prédiction : {prediction}, Probabilité : {probability}", flush=True)
+    print(f"Importance globale : {len(global_importance)} variables", flush=True)
+    print(f"Importance locale : {len(local_importance)} variables", flush=True)
 
     return {
         "prediction": prediction,
