@@ -34,12 +34,14 @@ def predict(request: PredictionRequest):
     try:
         model = load_model()
         print("Start pour la prédiction...")
-        prediction, probability, used_features = run_prediction(model, request.features)
+        # prediction, probability, used_features = run_prediction(model, request.features)
+        result = run_prediction(model, request.features)
         print("Prédiction effectuée avec succès.")
-        return PredictionResponse(
-            prediction=prediction,
-            probability=probability,
-            used_features=used_features,
-        )
+        # return PredictionResponse(
+        #     prediction=prediction,
+        #     probability=probability,
+        #     used_features=used_features,
+        # )
+        return result
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc)) from exc
