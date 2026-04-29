@@ -82,5 +82,19 @@ if submitted:
 
         with st.expander("Valeurs saisies"):
             st.json(values)
+
+        # add importances local and global
+        import pandas as pd
+        local_df = pd.DataFrame(result["local_importance"])
+        global_df = pd.DataFrame(result["global_importance"])
+
+        st.subheader("Importance locale")
+        st.dataframe(local_df)
+        st.bar_chart(local_df.set_index("feature")["contribution"])
+
+        st.subheader("Importance globale")
+        st.dataframe(global_df)
+        st.bar_chart(global_df.set_index("feature")["importance"])
+
     except Exception as exc:
         st.error(f"Erreur lors de l'appel API : {exc}")
