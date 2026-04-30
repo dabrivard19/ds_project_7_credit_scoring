@@ -185,6 +185,7 @@ def run_prediction(model, user_features: dict) -> dict:
     print(f"Importance globale : {len(global_importance)} variables", flush=True)
     print(f"Importance locale : {len(local_importance)} variables", flush=True)
 
+    # return all infos in a dict for better extensibility
     return {
         "prediction": prediction,
         "probability": probability,
