@@ -3,7 +3,7 @@ from functools import lru_cache
 from pathlib import Path
 import joblib
 
-MODEL_PATH = Path("model/model.joblib")
+MODEL_PATH = Path("model/best_model_lightGBM.joblib")
 
 
 @lru_cache(maxsize=1)
