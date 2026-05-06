@@ -154,7 +154,7 @@ if submitted:
 
         fig = plot_client_score_gauge(
             client_proba=0.73,
-            threshold=threshold_info["threshold"],
+            threshold=result["threshold"],
             positive_label="Client à risque"
         )
 

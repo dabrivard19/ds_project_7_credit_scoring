@@ -191,6 +191,7 @@ def run_prediction(model_plus, user_features: dict) -> dict:
     return {
         "prediction": prediction,
         "probability": probability,
+        "threshold": threshold,
         "used_features": feature_names,
         "local_importance": local_importance,
         "global_importance": global_importance,
