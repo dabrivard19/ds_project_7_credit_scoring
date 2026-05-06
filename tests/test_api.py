@@ -13,7 +13,9 @@ class FakeModel:
 
 
 def fake_load_model():
-    return FakeModel()
+    return {"model":FakeModel(), "threshold": 0.5, "feature_names": ["CODE_GENDER", "FLAG_OWN_CAR", "FLAG_OWN_REALTY", \
+                                                                     "CNT_CHILDREN", "AMT_INCOME_TOTAL", "AMT_CREDIT", \
+                                                                     "AMT_ANNUITY", "NAME_INCOME_TYPE", "NAME_EDUCATION_TYPE", "AGE_YEARS"]}
 
 
 def test_root():
