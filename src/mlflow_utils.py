@@ -6,14 +6,16 @@ import mlflow
 import mlflow.sklearn
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.metrics import roc_auc_score, roc_curve, confusion_matrix
+from sklearn.metrics import roc_auc_score, roc_curve, confusion_matrix, f1_score
 
 from .config import MLFLOW
 
-def init_mlflow():
+def init_mlflow(experiment_name=""):
     """Initialise MLflow en mode local FileStore (fichiers)."""
     mlflow.set_tracking_uri(MLFLOW.tracking_uri)
-    mlflow.set_experiment(MLFLOW.experiment_name)
+    if (len(experiment_name) > 0):
+        mlflow.set_experiment(experiment_name)
+    # mlflow.set_experiment(MLFLOW.experiment_name)
 
 def log_json(data: dict, artifact_name: str):
     with open(artifact_name, "w", encoding="utf-8") as f:
@@ -125,6 +127,7 @@ def track_run(
     fit_time: float,
     predict_time: float,
     cv_results_df=None,
+    notebook_run_id=None,
 ):
     """Tracking standardisé :
     - params
@@ -137,6 +140,24 @@ def track_run(
         # Params
         mlflow.log_params(params)
 
+
+        model_type = f"{run_name}_threshold_cost_optimized"
+
+        mlflow.set_tag("notebook_run_id", notebook_run_id)
+        mlflow.set_tag("algo", run_name)
+        mlflow.set_tag("model_type", model_type)
+        mlflow.set_tag("stage", "validation")
+        mlflow.set_tag("threshold_strategy", "cost_optimized")
+
+        # mlflow.log_metric("auc", float(roc_auc_score(y_valid, y_valid_proba)))
+        # mlflow.log_metric("f1", float(f1_score(y_valid, y_valid_pred)))
+        # mlflow.log_metric("business_cost", float(threshold_info["cost"]))
+        # mlflow.log_metric("threshold", float(threshold_info["threshold"]))
+        # mlflow.log_metric("fit_time", float(fit_time))
+        # mlflow.log_metric("predict_time", float(predict_time))
+        # mlflow.log_metric("main_score", -float(threshold_info["cost"]))
+
+
         # Metrics (scalars)
         metrics = dict(extra_metrics or {})
         metrics["fit_time"] = float(fit_time)
@@ -144,6 +165,7 @@ def track_run(
         metrics["threshold_opt"] = float(threshold_info.get("threshold", 0.5)) if threshold_info else 0.5
         metrics["business_cost_opt"] = float(threshold_info.get("cost", np.nan)) if threshold_info else float("nan")
         metrics["AUC"] = float(roc_auc_score(y_valid, y_valid_proba))
+        # metrics["main_score"] = -float(threshold_info.get("cost", np.nan)) if threshold_info else float("nan")
 
         for k, v in metrics.items():
             mlflow.log_metric(k, float(v) if v is not None else float("nan"))
@@ -182,7 +204,11 @@ def track_run(
 
         from mlflow.models import infer_signature
         signature = infer_signature(X_train, y_valid_pred)
-        mlflow.sklearn.log_model(model, artifact_path="model", registered_model_name=model_name,
+        mlflow.sklearn.log_model(model, 
+                                #  artifact_path="model", 
+                                #  registered_model_name=model_name,
+                                artifact_path=f"{run_name}_model",
+                                registered_model_name=f"{run_name}_{model_name}",                                
                                 signature=signature,          # <- input & output schema
                                 input_example=X_train.head(5) # <- example payload (also helps auto-infer)
                                 )

@@ -32,10 +32,10 @@ def predict(request: PredictionRequest):
     print("Request dict :", request.model_dump(), flush=True)
     
     try:
-        model = load_model()
+        model_plus = load_model()
         print("Start pour la prédiction...")
         # prediction, probability, used_features = run_prediction(model, request.features)
-        result = run_prediction(model, request.features)
+        result = run_prediction(model_plus, request.features)
         print("Prédiction effectuée avec succès.")
         # return PredictionResponse(
         #     prediction=prediction,

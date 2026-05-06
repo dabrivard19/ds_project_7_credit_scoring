@@ -156,7 +156,7 @@ def get_local_importance(model, X: pd.DataFrame) -> list[dict]:
         return []
 
 
-def run_prediction(model, user_features: dict) -> dict:
+def run_prediction(model_plus, user_features: dict) -> dict:
     print("\nExécution de la prédiction...", flush=True)
 
     X = prepare_dataframe(user_features)
@@ -166,10 +166,12 @@ def run_prediction(model, user_features: dict) -> dict:
     feature_names = list(X.columns)
 
     try:
+        model = model_plus["model"]
+        threshold = model_plus["threshold"]
+
         proba = model.predict_proba(X)
         probability = float(proba[0][1])
 
-        threshold = 0.5
         prediction = int(probability >= threshold)
 
         print(f"\nProbabilités : {proba}", flush=True)

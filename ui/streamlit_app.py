@@ -11,6 +11,75 @@ def get_form_config():
     return response.json()["features"]
 
 
+import plotly.graph_objects as go
+
+def plot_client_score_gauge(client_proba, threshold=0.5, positive_label="Classe 1"):
+    score_pct = client_proba * 100
+    threshold_pct = threshold * 100
+    y_pred = int(client_proba >= threshold)
+
+    decision = positive_label if y_pred == 1 else "Classe 0"
+
+    fig = go.Figure(go.Indicator(
+        mode="gauge+number",
+        value=score_pct,
+        number={
+            "suffix": "%",
+            "font": {"size": 36}
+        },
+        title={
+            "text": (
+                f"<b>Score client</b><br>"
+                f"<span style='font-size:16px'>Décision : {decision}</span>"
+            )
+        },
+        gauge={
+            "axis": {
+                "range": [0, 100],
+                "tickwidth": 1,
+                "tickmode": "array",
+                "tickvals": [0, threshold_pct, 100],
+                "ticktext": ["0%", f"Seuil<br>{threshold_pct:.1f}%", "100%"],
+            },
+            "bar": {"color": "darkblue"},
+            "bgcolor": "white",
+            "borderwidth": 2,
+            "bordercolor": "gray",
+            "steps": [
+                {
+                    "range": [0, threshold_pct],
+                    "color": "#B7E4C7"   # zone classe 0
+                },
+                {
+                    "range": [threshold_pct, 100],
+                    "color": "#F4A6A6"   # zone classe 1
+                },
+            ],
+            "threshold": {
+                "line": {"color": "red", "width": 5},
+                "thickness": 0.8,
+                "value": threshold_pct,
+            },
+        }
+    ))
+
+    fig.add_annotation(
+        text=f"Probabilité client : <b>{score_pct:.1f}%</b><br>"
+             f"Seuil modèle : <b>{threshold_pct:.1f}%</b>",
+        x=0.5,
+        y=0.05,
+        showarrow=False,
+        font={"size": 14}
+    )
+
+    fig.update_layout(
+        height=380,
+        margin=dict(t=80, b=40, l=30, r=30),
+    )
+
+    return fig
+
+
 def render_input(feature: dict):
     label = feature["label"]
     help_text = feature.get("help")
@@ -83,6 +152,15 @@ if submitted:
         with st.expander("Valeurs saisies"):
             st.json(values)
 
+        fig = plot_client_score_gauge(
+            client_proba=0.73,
+            threshold=threshold_info["threshold"],
+            positive_label="Client à risque"
+        )
+
+        # fig.show()
+        st.plotly_chart(fig, use_container_width=True)
+
         # # ========================
         # # Importance locale
         # # ========================
@@ -131,3 +209,7 @@ if submitted:
 
     except Exception as exc:
         st.error(f"Erreur lors de l'appel API : {exc}")
+
+
+
+

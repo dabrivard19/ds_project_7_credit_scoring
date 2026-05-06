@@ -16,7 +16,8 @@ class MlflowConfig:
     tracking_uri: str = "file:./mlruns"
     # Artifacts au même endroit (par défaut) ou dossier dédié
     artifact_location: str = "./mlruns"
-    experiment_name: str = "home_credit"
+    # experiment_name: str = "home_credit"
+    experiment_name: str = ""
 
 PATHS = Paths()
 MLFLOW = MlflowConfig()
