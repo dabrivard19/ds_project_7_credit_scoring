@@ -159,13 +159,13 @@ def track_run(
 
 
         # Metrics (scalars)
-        metrics = dict(extra_metrics or {})
-        metrics["fit_time"] = float(fit_time)
-        metrics["predict_time"] = float(predict_time)
+        metrics = dict(extra_metrics)  # AUC, f1, business_cost, etc. passés depuis la validation
+        # metrics["fit_time"] = float(fit_time)
+        # metrics["predict_time"] = float(predict_time)
         metrics["threshold_opt"] = float(threshold_info.get("threshold", 0.5)) if threshold_info else 0.5
         metrics["business_cost_opt"] = float(threshold_info.get("cost", np.nan)) if threshold_info else float("nan")
-        metrics["AUC"] = float(roc_auc_score(y_valid, y_valid_proba))
-        # metrics["main_score"] = -float(threshold_info.get("cost", np.nan)) if threshold_info else float("nan")
+        # metrics["AUC"] = float(roc_auc_score(y_valid, y_valid_proba))
+        metrics["main_score"] = -float(threshold_info.get("cost", np.nan)) if threshold_info else float("nan")
 
         for k, v in metrics.items():
             mlflow.log_metric(k, float(v) if v is not None else float("nan"))
@@ -212,3 +212,5 @@ def track_run(
                                 signature=signature,          # <- input & output schema
                                 input_example=X_train.head(5) # <- example payload (also helps auto-infer)
                                 )
+
+    mlflow.end_run()

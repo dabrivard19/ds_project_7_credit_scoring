@@ -74,7 +74,7 @@ def gridsearch_logreg_smote(X, y, cv):
     pre = build_preprocessor(X)
     pipe = ImbPipeline(steps=[
         ("pre", pre),
-        #("smote", SMOTE()),
+        ("smote", SMOTE(random_state=42)),
         ("model", LogisticRegression(max_iter=2000, n_jobs=None)),
     ])
     param_grid = {
@@ -88,7 +88,7 @@ def gridsearch_rf_smote(X, y, cv):
     pre = build_preprocessor(X)
     pipe = ImbPipeline(steps=[
         ("pre", pre),
-        #("smote", SMOTE()),
+        ("smote", SMOTE(random_state=42)),
         ("model", RandomForestClassifier(random_state=42, n_jobs=-1)),
     ])
     # param_grid = {
@@ -143,14 +143,14 @@ def gridsearch_xgb_smote(X, y, cv):
 
     pipe = ImbPipeline(steps=[
         ("pre", pre),
-        # ("smote", SMOTE(random_state=42)),  # décommente si tu veux vraiment SMOTE ici
+        ("smote", SMOTE(random_state=42)),  # décommente si tu veux vraiment SMOTE ici
         ("model", XGBClassifier(
             objective="binary:logistic",
             eval_metric="auc",
             n_jobs=-1,
             random_state=42,
             tree_method="hist",          # CPU rapide (gpu_hist si GPU)
-            scale_pos_weight=scale_pos_weight,
+            # scale_pos_weight=scale_pos_weight,
         )),
     ])
 
@@ -192,7 +192,8 @@ def gridsearch_lgbm_smote(X, y, cv):
 
     pipe = ImbPipeline(steps=[
         ("pre", pre),
-        ("dense", ToDense()),   # ✅ rend LGBM stable avec OHE
+        # ("dense", ToDense()),   # ✅ rend LGBM stable avec OHE
+        ("smote", SMOTE(random_state=42)),
         ("model", LGBMClassifier(
             objective="binary",
             random_state=42,
