@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 import pandas as pd
 
-DEFAULT_PAYLOAD_PATH = Path("app/default_payload.json")
+DEFAULT_PAYLOAD_PATH = Path("../app/default_payload.json")
 
 import numpy as np
 
@@ -181,11 +181,11 @@ def run_prediction(model_plus, user_features: dict) -> dict:
         print(f"\nErreur lors de la prédiction : {exc}", flush=True)
         raise RuntimeError(f"Erreur lors de la prédiction : {exc}") from exc
 
-    global_importance = get_global_importance(model, feature_names)
-    local_importance = get_local_importance(model, X)
+    # global_importance = get_global_importance(model, feature_names)
+    # local_importance = get_local_importance(model, X)
 
-    print(f"Importance globale : {len(global_importance)} variables", flush=True)
-    print(f"Importance locale : {len(local_importance)} variables", flush=True)
+    # print(f"Importance globale : {len(global_importance)} variables", flush=True)
+    # print(f"Importance locale : {len(local_importance)} variables", flush=True)
 
     # return all infos in a dict for better extensibility
     return {
@@ -193,6 +193,6 @@ def run_prediction(model_plus, user_features: dict) -> dict:
         "probability": probability,
         "threshold": threshold,
         "used_features": feature_names,
-        "local_importance": local_importance,
-        "global_importance": global_importance,
+        # "local_importance": local_importance,
+        # "global_importance": global_importance,
     }

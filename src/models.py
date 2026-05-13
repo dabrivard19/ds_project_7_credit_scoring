@@ -12,6 +12,11 @@ from sklearn.model_selection import GridSearchCV, StratifiedKFold
 from sklearn.dummy import DummyClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
+from xgboost import XGBClassifier
+from lightgbm import LGBMClassifier
+from scipy import sparse
+from sklearn.base import BaseEstimator, TransformerMixin
+
 
 from imblearn.pipeline import Pipeline as ImbPipeline
 from imblearn.over_sampling import SMOTE
@@ -74,7 +79,7 @@ def gridsearch_logreg_smote(X, y, cv):
     pre = build_preprocessor(X)
     pipe = ImbPipeline(steps=[
         ("pre", pre),
-        ("smote", SMOTE(random_state=42)),
+        # ("smote", SMOTE(random_state=42)),
         ("model", LogisticRegression(max_iter=2000, n_jobs=None)),
     ])
     param_grid = {
@@ -88,7 +93,7 @@ def gridsearch_rf_smote(X, y, cv):
     pre = build_preprocessor(X)
     pipe = ImbPipeline(steps=[
         ("pre", pre),
-        ("smote", SMOTE(random_state=42)),
+        # ("smote", SMOTE(random_state=42)),
         ("model", RandomForestClassifier(random_state=42, n_jobs=-1)),
     ])
     # param_grid = {
@@ -131,8 +136,6 @@ def run_gridsearch(pipe, param_grid, X, y, cv, refit_metric="business"):
     gs.fit(X, y)
     return gs
 
-from xgboost import XGBClassifier
-
 def gridsearch_xgb_smote(X, y, cv):
     pre = build_preprocessor(X)
 
@@ -143,7 +146,7 @@ def gridsearch_xgb_smote(X, y, cv):
 
     pipe = ImbPipeline(steps=[
         ("pre", pre),
-        ("smote", SMOTE(random_state=42)),  # décommente si tu veux vraiment SMOTE ici
+        # ("smote", SMOTE(random_state=42)),  # décommente si tu veux vraiment SMOTE ici
         ("model", XGBClassifier(
             objective="binary:logistic",
             eval_metric="auc",
@@ -177,9 +180,6 @@ def gridsearch_xgb_smote(X, y, cv):
 # LightGBM
 # Dépendance : pip install lightgbm
 
-from lightgbm import LGBMClassifier
-from scipy import sparse
-from sklearn.base import BaseEstimator, TransformerMixin
 
 class ToDense(BaseEstimator, TransformerMixin):
     def fit(self, X, y=None):
@@ -193,7 +193,7 @@ def gridsearch_lgbm_smote(X, y, cv):
     pipe = ImbPipeline(steps=[
         ("pre", pre),
         # ("dense", ToDense()),   # ✅ rend LGBM stable avec OHE
-        ("smote", SMOTE(random_state=42)),
+        # ("smote", SMOTE(random_state=42)),
         ("model", LGBMClassifier(
             objective="binary",
             random_state=42,
