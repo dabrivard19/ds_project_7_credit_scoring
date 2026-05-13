@@ -79,7 +79,7 @@ def gridsearch_logreg_smote(X, y, cv):
     pre = build_preprocessor(X)
     pipe = ImbPipeline(steps=[
         ("pre", pre),
-        # ("smote", SMOTE(random_state=42)),
+        ("smote", SMOTE(random_state=42)),
         ("model", LogisticRegression(max_iter=2000, n_jobs=None)),
     ])
     param_grid = {
@@ -93,7 +93,7 @@ def gridsearch_rf_smote(X, y, cv):
     pre = build_preprocessor(X)
     pipe = ImbPipeline(steps=[
         ("pre", pre),
-        # ("smote", SMOTE(random_state=42)),
+        ("smote", SMOTE(random_state=42)),
         ("model", RandomForestClassifier(random_state=42, n_jobs=-1)),
     ])
     # param_grid = {
@@ -146,7 +146,7 @@ def gridsearch_xgb_smote(X, y, cv):
 
     pipe = ImbPipeline(steps=[
         ("pre", pre),
-        # ("smote", SMOTE(random_state=42)),  # décommente si tu veux vraiment SMOTE ici
+        ("smote", SMOTE(random_state=42)),  # décommente si tu veux vraiment SMOTE ici
         ("model", XGBClassifier(
             objective="binary:logistic",
             eval_metric="auc",
@@ -193,7 +193,7 @@ def gridsearch_lgbm_smote(X, y, cv):
     pipe = ImbPipeline(steps=[
         ("pre", pre),
         # ("dense", ToDense()),   # ✅ rend LGBM stable avec OHE
-        # ("smote", SMOTE(random_state=42)),
+        ("smote", SMOTE(random_state=42)),
         ("model", LGBMClassifier(
             objective="binary",
             random_state=42,
@@ -224,42 +224,6 @@ def gridsearch_lgbm_smote(X, y, cv):
     }
     return pipe, param_grid
 
-# def gridsearch_lgbm_smote(X, y, cv):
-#     pre = build_preprocessor(X)
-
-#     pipe = ImbPipeline(steps=[
-#         ("pre", pre),
-#         # ("smote", SMOTE(random_state=42)),  # décommente si tu veux vraiment SMOTE ici
-#         ("model", LGBMClassifier(
-#             objective="binary",
-#             n_jobs=-1,
-#             random_state=42,
-#         )),
-#     ])
-
-#     # param_grid = {
-#     #     "model__n_estimators": [400, 800],
-#     #     "model__learning_rate": [0.03, 0.1],
-#     #     "model__num_leaves": [31, 63, 127],
-#     #     "model__max_depth": [-1, 5, 10],
-#     #     "model__min_child_samples": [10, 30, 60],
-#     #     "model__subsample": [0.8, 1.0],
-#     #     "model__colsample_bytree": [0.8, 1.0],
-#     #     "model__reg_alpha": [0.0, 0.1],
-#     #     "model__reg_lambda": [0.0, 1.0],
-#     # }
-
-#     param_grid = {
-#     "model__n_estimators": [600],                 # on fixe
-#     "model__learning_rate": [0.03, 0.1],
-#     "model__num_leaves": [31, 63],
-#     "model__max_depth": [-1, 10],                 # -1 = pas de limite
-#     "model__min_child_samples": [30, 60],
-#     "model__subsample": [0.8, 1.0],
-#     "model__colsample_bytree": [0.8, 1.0],
-#     }
-
-#     return pipe, param_grid
 
 # Remarque importante (SMOTE + arbres boostés)
 # Pour XGBoost / LightGBM, SMOTE n’est pas toujours recommandé (ça peut dégrader, selon le bruit / la frontière de décision).
