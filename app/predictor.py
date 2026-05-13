@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 import pandas as pd
 
-DEFAULT_PAYLOAD_PATH = Path("../app/default_payload.json")
+DEFAULT_PAYLOAD_PATH = Path("app/default_payload.json")
 
 import numpy as np
 
