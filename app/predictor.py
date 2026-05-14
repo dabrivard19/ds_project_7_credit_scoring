@@ -179,6 +179,7 @@ def run_prediction(model_plus, user_features: dict) -> dict:
 
         print(f"\nProbabilités : {proba}", flush=True)
         print(f"Prédiction avec seuil {threshold} : {prediction}", flush=True)
+        print("VERSION API = 2026-05-14 sans used_features")
 
         return {
             "prediction": prediction,
