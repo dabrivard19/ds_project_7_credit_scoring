@@ -6,6 +6,11 @@ import joblib
 BASE_DIR = Path(__file__).resolve().parent
 MODEL_PATH = BASE_DIR / "model/best_model_xgBoost.joblib"   
 
+BASE_DIR = Path(__file__).resolve().parent
+PROJECT_DIR = BASE_DIR.parent
+
+MODEL_PATH = PROJECT_DIR / "model" / "best_model_xgBoost.joblib"
+
 
 @lru_cache(maxsize=1)
 def load_model():
