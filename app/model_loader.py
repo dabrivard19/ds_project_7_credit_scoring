@@ -3,7 +3,8 @@ from functools import lru_cache
 from pathlib import Path
 import joblib
 
-MODEL_PATH = Path("model/best_model_lightGBM.joblib")
+BASE_DIR = Path(__file__).resolve().parent
+MODEL_PATH = BASE_DIR / "model/best_model_xgBoost.joblib"   
 
 
 @lru_cache(maxsize=1)
