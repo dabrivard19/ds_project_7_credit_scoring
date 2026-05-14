@@ -152,9 +152,11 @@ if submitted:
         with st.expander("Valeurs saisies"):
             st.json(values)
 
+        st.metric("Result", result)
+
         fig = plot_client_score_gauge(
             client_proba=0.73,
-            threshold=result["threshold"],
+            threshold=result['threshold'],
             positive_label="Client à risque"
         )
 

@@ -166,7 +166,7 @@ def run_prediction(model_plus, user_features: dict) -> dict:
 
     print(f"\nDataFrame pour la prédiction :\n{X}", flush=True)
 
-    feature_names = list(X.columns)
+    # feature_names = list(X.columns)
 
     try:
         model = model_plus["model"]
@@ -180,6 +180,15 @@ def run_prediction(model_plus, user_features: dict) -> dict:
         print(f"\nProbabilités : {proba}", flush=True)
         print(f"Prédiction avec seuil {threshold} : {prediction}", flush=True)
 
+        return {
+            "prediction": prediction,
+            "probability": probability,
+            "threshold": threshold,
+            # "used_features": feature_names,
+            # "local_importance": local_importance,
+            # "global_importance": global_importance,
+        }        
+
     except Exception as exc:
         print(f"\nErreur lors de la prédiction : {exc}", flush=True)
         raise RuntimeError(f"Erreur lors de la prédiction : {exc}") from exc
@@ -191,11 +200,4 @@ def run_prediction(model_plus, user_features: dict) -> dict:
     # print(f"Importance locale : {len(local_importance)} variables", flush=True)
 
     # return all infos in a dict for better extensibility
-    return {
-        "prediction": prediction,
-        "probability": probability,
-        "threshold": threshold,
-        "used_features": feature_names,
-        # "local_importance": local_importance,
-        # "global_importance": global_importance,
-    }
+
