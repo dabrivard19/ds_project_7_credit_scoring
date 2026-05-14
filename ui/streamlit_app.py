@@ -144,20 +144,34 @@ if submitted:
         response.raise_for_status()
         result = response.json()
 
+        prediction = result.get("prediction")
+        prediction_label = "Inconnu"
+        probability = 0.0
+        threshold = 0.0
+
+        if prediction == 0:
+            prediction_label = "Client non risqué (Classe 0)"
+            probability = 1.0 - result.get("probability")
+        else:            
+            prediction_label = "Client à risque (Classe 1)"
+            probability = result.get("probability")
+        
+        threshold = result.get("threshold")
+
         st.success("Prédiction calculée")
-        st.metric("Classe prédite", result["prediction"])
-        if result.get("probability") is not None:
-            st.metric("Probabilité", f"{result['probability']:.4f}")
+        st.metric("Classe prédite", prediction)
+        st.metric("Probabilité", f"{probability:.4f}")
+        st.metric("Threshold", f"{threshold:.4f}")
 
         with st.expander("Valeurs saisies"):
             st.json(values)
 
-        st.metric("Result", result)
-
+        # st.metric("Result", result)
+        
         fig = plot_client_score_gauge(
-            client_proba=0.73,
-            threshold=result['threshold'],
-            positive_label="Client à risque"
+            client_proba=probability,
+            threshold=threshold,
+            positive_label=prediction_label
         )
 
         # fig.show()
