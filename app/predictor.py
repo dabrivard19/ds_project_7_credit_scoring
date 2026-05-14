@@ -51,6 +51,41 @@ def prepare_dataframe(user_features: dict) -> pd.DataFrame:
     print(f"\nDataFrame préparé : {full_payload}")
     return pd.DataFrame([full_payload])
 
+def run_prediction(model_plus, user_features: dict) -> dict:
+    print("\nExécution de la prédiction...", flush=True)
+
+    X = prepare_dataframe(user_features)
+
+    print(f"\nDataFrame pour la prédiction :\n{X}", flush=True)
+
+    # feature_names = list(X.columns)
+
+    try:
+        model = model_plus["model"]
+        threshold = model_plus["threshold"]
+
+        proba = model.predict_proba(X)
+        probability = float(proba[0][1])
+
+        prediction = int(probability >= threshold)
+
+        print(f"\nProbabilités : {proba}", flush=True)
+        print(f"Prédiction avec seuil {threshold} : {prediction}", flush=True)
+        print("VERSION API = 2026-05-14 sans used_features")
+
+        return {
+            "prediction": prediction,
+            "probability": probability,
+            "threshold": threshold,
+            # "used_features": feature_names,
+            # "local_importance": local_importance,
+            # "global_importance": global_importance,
+        }        
+
+    except Exception as exc:
+        print(f"\nErreur lors de la prédiction : {exc}", flush=True)
+        raise RuntimeError(f"Erreur lors de la prédiction : {exc}") from exc
+
 
 # def run_prediction(model, user_features: dict) -> tuple[int, float | None, list[str]]:
 #     print("\nExécution de la prédiction...")
@@ -157,42 +192,6 @@ def get_local_importance(model, X: pd.DataFrame) -> list[dict]:
     except Exception as exc:
         print(f"Erreur SHAP XGBClassifier : {exc}", flush=True)
         return []
-
-
-def run_prediction(model_plus, user_features: dict) -> dict:
-    print("\nExécution de la prédiction...", flush=True)
-
-    X = prepare_dataframe(user_features)
-
-    print(f"\nDataFrame pour la prédiction :\n{X}", flush=True)
-
-    # feature_names = list(X.columns)
-
-    try:
-        model = model_plus["model"]
-        threshold = model_plus["threshold"]
-
-        proba = model.predict_proba(X)
-        probability = float(proba[0][1])
-
-        prediction = int(probability >= threshold)
-
-        print(f"\nProbabilités : {proba}", flush=True)
-        print(f"Prédiction avec seuil {threshold} : {prediction}", flush=True)
-        print("VERSION API = 2026-05-14 sans used_features")
-
-        return {
-            "prediction": prediction,
-            "probability": probability,
-            "threshold": threshold,
-            # "used_features": feature_names,
-            # "local_importance": local_importance,
-            # "global_importance": global_importance,
-        }        
-
-    except Exception as exc:
-        print(f"\nErreur lors de la prédiction : {exc}", flush=True)
-        raise RuntimeError(f"Erreur lors de la prédiction : {exc}") from exc
 
     # global_importance = get_global_importance(model, feature_names)
     # local_importance = get_local_importance(model, X)

@@ -10,4 +10,5 @@ class PredictionRequest(BaseModel):
 class PredictionResponse(BaseModel):
     prediction: int
     probability: float | None = None
-    used_features: List[str]
+    threshold: float | None = None
+    # used_features: List[str]
